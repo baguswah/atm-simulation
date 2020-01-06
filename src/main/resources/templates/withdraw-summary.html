@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <link th:href="@{/css/styles.css}" rel="stylesheet" />
+        <title>ATM Simulation</title>
+    </head>
+    <body>
+        <h1>ATM Simulation</h1>
+        <form th:action="@{/withdraw-summary}" th:object="${transaction}" th:with="transactionDate=${transaction.transactionDate}" method="post" class="container">
+            <div>Summary</div>
+            <div>Date : <span th:text="${#dates.format(transactionDate, 'yyyy-MM-dd h:mm aa')}">2019-02-30 10:00 AM</span></div>
+            <div>Withdraw : $<span th:text="*{amount}">50</span></div>
+            <div>Balance : $<span th:text="*{balance}">10</span></div>
+            <br /><br />
+            <ol>
+                <li>Transaction</li>
+                <li>Exit</li>
+            </ol>
+            <div>Choose option[2]: <input type="text" name="option" maxlength="1" style="width: 1em" autofocus="autofocus" /></div>
+            <input type="submit" name="summary" class="display-none" />
+        </form>
+    </body>
+</html>

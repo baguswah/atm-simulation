@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <link th:href="@{/css/styles.css}" rel="stylesheet" />
+        <title>ATM Simulation</title>
+    </head>
+    <body>
+        <h1>ATM Simulation</h1>
+        <form th:action="@{/login}" method="post" class="container">
+            <table>
+                <tr>
+                    <td>Enter Account Number: </td>
+                    <td><input type="text" name="username" maxlength="6" style="width: 6em" autofocus="autofocus" /></td>
+                </tr>
+                <tr>
+                    <td>Enter PIN: </td>
+                    <td><input type="password" name="password" maxlength="6" style="width: 6em" /></td>
+                </tr>
+            </table>
+            <input type="submit" name="login" class="display-none" />
+        </form>
+        <br/><br />
+        <div class="error" th:if="${#request.getSession().getAttribute('SPRING_SECURITY_LAST_EXCEPTION')}" th:text="${#request.getSession().getAttribute('SPRING_SECURITY_LAST_EXCEPTION').getMessage()}">Error</div>
+    </body>
+</html>

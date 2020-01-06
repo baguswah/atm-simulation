@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <link th:href="@{/css/styles.css}" rel="stylesheet" />
+        <title>ATM Simulation</title>
+    </head>
+    <body>
+        <h1>ATM Simulation</h1>
+        <div class="container" style="text-align: center;"><span class="error" th:text="${message}">Error</span></div>
+        <div class="footer"><a th:href="@{/}">Back</a></div>
+    </body>
+</html>

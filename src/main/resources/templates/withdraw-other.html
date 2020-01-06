@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <link th:href="@{/css/styles.css}" rel="stylesheet" />
+        <title>ATM Simulation</title>
+    </head>
+    <body>
+        <h1>ATM Simulation</h1>
+        <form th:action="@{/withdraw-other}" method="post" class="container">
+            <div>Other Withdraw</div>
+            <div>Enter amount to withdraw: <input type="text" name="amount" maxlength="4" style="width: 4em" autofocus="autofocus" /></div>
+            <input type="submit" name="withdraw" class="display-none" />
+        </form>
+        <br/><br />
+        <div class="error" th:if="${errorMessage}" th:text="${errorMessage}">Error</div>
+    </body>
+</html>

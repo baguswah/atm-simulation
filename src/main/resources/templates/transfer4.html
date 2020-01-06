@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <link th:href="@{/css/styles.css}" rel="stylesheet" />
+        <title>ATM Simulation</title>
+    </head>
+    <body>
+        <h1>ATM Simulation</h1>
+        <form th:action="@{/transfer4}" method="post" class="container">
+            <div>Transfer Confirmation</div>
+            <div>Destination Account: <span th:text="${destAccount}"></span></div>
+            <div>Transfer Amount    : $<span th:text="${amount}"></span></div>
+            <div>Reference Number   : <span th:text="${refNumber}"></span></div>
+            <br />
+            <ol>
+                <li>Confirm Trx</li>
+                <li>Cancel Trx</li>
+            </ol>
+            <div>Choose option[2]: <input type="text" name="option" maxlength="1" style="width: 1em" autofocus="autofocus" /></div>
+            <input type="hidden" name="destAccount" th:value="${destAccount}" />
+            <input type="hidden" name="amount" th:value="${amount}" />
+            <input type="hidden" name="refNumber" th:value="${refNumber}" />
+            <input type="submit" name="transfer4" class="display-none" />
+        </form>
+    </body>
+</html>

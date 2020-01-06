@@ -1,0 +1,4 @@
+transaction_id,transaction_date,account_number,destination_account,type,amount,balance
+999999,2020-01-01 06:23:52,112244,null,WDR,-30.00,70.00
+999998,2020-01-02 09:43:23,112244,112233,TRF,-40.00,30.00
+999997,2020-01-02 09:43:23,112233,112244,TRF,40.00,100.00

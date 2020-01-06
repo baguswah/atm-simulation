@@ -1,0 +1,54 @@
+body {
+	margin: 15px;
+	width: calc(100vw - 30px);
+	height: calc(100vh - 30px);
+	background-color: blue;
+	color: white;
+	font-family: monospace;
+	font-size: 25px;
+	text-align: center;
+}
+body > .container {
+    display: inline-block;
+	margin-top: 10vh;
+    text-align: left;
+}
+body > .footer {
+	margin-top: 10vh;
+}
+h1 {
+	margin: 0;
+	padding: 0.67em 0;
+}
+a {
+	color: inherit;
+}
+a:focus {
+	color: inherit;
+	font-weight: bold;
+}
+input {
+    color: inherit;
+    font-family: inherit;
+    font-size: 1em;
+    background-color: transparent;
+    border-color: transparent;
+    outline-color: transparent;
+    border-bottom: 0.1em dashed white;
+}
+.display-none {
+	display: none;
+}
+.error {
+    font-weight: bold;
+    text-align: center;
+    animation: blinkingText 0.8s infinite;
+}
+@keyframes blinkingText {
+    0%   { color: white;       }
+    49%  { color: transparent; }
+    50%  { color: transparent; }
+    69%  { color: transparent; }
+    70%  { color: white;       }
+    100% { color: white;       }
+}

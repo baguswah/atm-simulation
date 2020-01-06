@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<databaseChangeLog 
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"> 
+    <changeSet author="bagus.wahyudi@mitrais.com" id="init-tables" context="setup">
+        <createTable tableName="account">
+            <column name="account_number" type="char(6)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pin" type="char(12)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="balance" type="number" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="transaction">
+            <column name="transaction_id" type="int" autoIncrement="true" startWith="1" incrementBy="1">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="transaction_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_number" type="char(6)">
+                <constraints nullable="false" foreignKeyName="fk_account_number" referencedTableName="account" referencedColumnNames="account_number"/>
+            </column>
+            <column name="destination_account" type="char(6)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="type" type="char(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="number">
+                <constraints nullable="false"/>
+            </column>
+            <column name="balance" type="number">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="bagus.wahyudi@mitrais.com" id="load-sample" context="sample">
+        <loadData encoding="UTF-8" file="${basedir}/target/liquibase/data/account.csv" quotchar="&quot;" separator="," tableName="account">
+            <column header="account_number" name="account_number"/>
+            <column header="name" name="name"/>
+            <column header="pin" name="pin"/>
+            <column header="balance" name="balance"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="${basedir}/target/liquibase/data/transaction.csv" quotchar="&quot;" separator="," tableName="transaction">
+            <column header="transaction_id" name="transaction_id"/>
+            <column header="transaction_date" name="transaction_date"/>
+            <column header="account_number" name="account_number"/>
+            <column header="destination_account" name="destination_account"/>
+            <column header="type" name="type"/>
+            <column header="amount" name="amount"/>
+            <column header="balance" name="balance"/>
+        </loadData>
+    </changeSet>
+</databaseChangeLog>
