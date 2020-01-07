@@ -9,20 +9,16 @@
     </head>
     <body>
         <h1>ATM Simulation</h1>
-        <form th:action="@{/transfer4}" method="post" class="container">
+        <form th:action="@{/transfer4}" th:object="${session.transfer}" method="post" class="container">
             <div>Transfer Confirmation</div>
-            <div>Destination Account: <span th:text="${destAccount}"></span></div>
-            <div>Transfer Amount    : $<span th:text="${amount}"></span></div>
-            <div>Reference Number   : <span th:text="${refNumber}"></span></div>
-            <br />
+            <div>Destination Account: <span th:text="*{destinationAccount}"></span></div>
+            <div>Transfer Amount    : $<span th:text="*{amount}"></span></div>
+            <div>Reference Number   : <span th:text="*{reference}"></span></div>
             <ol>
                 <li>Confirm Trx</li>
                 <li>Cancel Trx</li>
             </ol>
             <div>Choose option[2]: <input type="text" name="option" maxlength="1" style="width: 1em" autofocus="autofocus" /></div>
-            <input type="hidden" name="destAccount" th:value="${destAccount}" />
-            <input type="hidden" name="amount" th:value="${amount}" />
-            <input type="hidden" name="refNumber" th:value="${refNumber}" />
             <input type="submit" name="transfer4" class="display-none" />
         </form>
     </body>

@@ -41,6 +41,9 @@
             <column name="balance" type="number">
                 <constraints nullable="false"/>
             </column>
+            <column name="reference" type="char(6)">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="bagus.wahyudi@mitrais.com" id="load-sample" context="sample">
@@ -58,6 +61,7 @@
             <column header="type" name="type"/>
             <column header="amount" name="amount"/>
             <column header="balance" name="balance"/>
+            <column header="reference" name="reference"/>
         </loadData>
     </changeSet>
 </databaseChangeLog>

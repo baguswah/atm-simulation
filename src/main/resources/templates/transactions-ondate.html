@@ -9,10 +9,10 @@
     </head>
     <body>
         <h1>ATM Simulation</h1>
-        <form th:action="@{/transfer3}" method="post" class="container">
-            <div>Reference Number: <input type="text" name="refNumber" maxlength="6" style="width: 6em" autofocus="autofocus" /></div>
-            <div>press enter to continue</div>
-            <input type="submit" name="transfer3" class="display-none" />
+        <form th:action="@{/transactions-ondate}" method="post" class="container">
+            <div>Please enter date</div>
+            <div>press enter to go back to Transaction: <input type="date" name="onDate" style="width: 10em" autofocus="autofocus" /></div>
+            <input type="submit" name="transactions-ondate" class="display-none" />
         </form>
         <br/><br />
         <div class="error" th:if="${errorMessage}" th:text="${errorMessage}">Error</div>

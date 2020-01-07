@@ -36,6 +36,13 @@ input {
     outline-color: transparent;
     border-bottom: 0.1em dashed white;
 }
+table.table {
+	margin-top: 0.5em;
+}
+table.table td {
+	border: 1px solid white;
+	padding: 0 0.25em;
+}
 .display-none {
 	display: none;
 }

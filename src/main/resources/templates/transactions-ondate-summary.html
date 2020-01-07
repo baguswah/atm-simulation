@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <link th:href="@{/css/styles.css}" rel="stylesheet" />
+        <title>ATM Simulation</title>
+    </head>
+    <body>
+        <h1>ATM Simulation</h1>
+        <form th:action="@{/summary}" method="post" class="container">
+            <div>Transactions on Date <span th:text="${onDate}">2020-01-01</span></div>
+            <table style="border: 1px solid white" class="table">
+                <thead>
+                    <tr>
+                        <td>Time</td>
+                        <td>Trans</td>
+                        <td>Type</td>
+                        <td>Amount</td>
+                        <td>Balance</td>
+                    </tr>
+                </thead>
+                <tbody th:each="tran : ${transactions}">
+                    <tr th:object="${tran}">
+                        <td th:text="${#dates.format(tran.transactionDate, 'hh:mm:ss aa')}">2019-01-01 10:15:23 AM</td>
+                        <td th:text="*{type}"></td>
+                        <td th:text="${tran.amount > 0 ? 'C' : 'D'}"></td>
+                        <td th:text="*{amount.abs()}"></td>
+                        <td th:text="*{balance}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <ol>
+                <li>Transaction</li>
+                <li>Exit</li>
+            </ol>
+            <div>Choose option[2]: <input type="text" name="option" maxlength="1" style="width: 1em" autofocus="autofocus" /></div>
+            <input type="submit" name="transfer-summary" class="display-none" />
+        </form>
+    </body>
+</html>

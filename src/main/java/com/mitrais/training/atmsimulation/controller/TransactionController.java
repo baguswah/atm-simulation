@@ -1,11 +1,19 @@
 package com.mitrais.training.atmsimulation.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +44,8 @@ public class TransactionController {
     }
 
     @PostMapping("/transaction")
-    public String selectTransaction(@RequestParam(value = "option", required = false) String option) {
+    public String selectTransaction(@RequestParam(value = "option", required = false) String option, Model model,
+            Authentication authentication) {
         String view;
         switch(option) {
         case "1":
@@ -44,6 +53,13 @@ public class TransactionController {
             break;
         case "2":
             view = "transfer1";
+            break;
+        case "3":
+            latestTransactions(authentication.getName(), model);
+            view = "last-transactions";
+            break;
+        case "4":
+            view = "transactions-ondate";
             break;
         default:
             view = "redirect:/logout";
@@ -78,7 +94,7 @@ public class TransactionController {
             return "withdraw";
         }
 
-        Transaction transaction = createTransaction(account, TransactionType.WITHDRAW, amount, null);
+        Transaction transaction = createTransaction(account, TransactionType.WITHDRAW, amount.negate(), null, null);
         model.addAttribute("transaction", transaction);
 
         return "withdraw-summary";
@@ -116,14 +132,14 @@ public class TransactionController {
             return "withdraw-other";
         }
 
-        Transaction transaction = createTransaction(account, TransactionType.WITHDRAW, amount, null);
+        Transaction transaction = createTransaction(account, TransactionType.WITHDRAW, amount.negate(), null, null);
         model.addAttribute("transaction", transaction);
 
         return "withdraw-summary";
     }
 
-    @PostMapping("/withdraw-summary")
-    public String withdrawSummary(@RequestParam(value = "option", required = false) String option) {
+    @PostMapping("/summary")
+    public String summary(@RequestParam(value = "option", required = false) String option) {
         switch (option) {
         case "1":
             return "transaction";
@@ -133,24 +149,24 @@ public class TransactionController {
     }
 
     @PostMapping("/transfer1")
-    public String transfer1(@RequestParam(value = "destAccount", required = false) String destAccount, Model model,
-            Authentication authentication) {
+    public String transfer1(@RequestParam(value = "destAccount", required = false) String destAccount,
+            HttpSession session, Model model, Authentication authentication) {
         Optional<Account> result = accountRepo.findById(destAccount);
         if (!result.isPresent() || destAccount.equals(authentication.getName())) {
             model.addAttribute("errorMessage", "Invalid account");
             return "transfer1";
         }
 
-        model.addAttribute("destAccount", destAccount);
+        Transaction transaction = new Transaction();
+        transaction.setDestinationAccount(destAccount);
+        session.setAttribute("transfer", transaction);
+
         return "transfer2";
     }
 
     @PostMapping("/transfer2")
-    public String transfer2(@RequestParam(value = "destAccount", required = true) String destAccount,
-            @RequestParam(value = "amount", required = false) String amountStr, Model model,
-            Authentication authentication) {
-
-        model.addAttribute("destAccount", destAccount);
+    public String transfer2(@RequestParam(value = "amount", required = false) String amountStr, HttpSession session,
+            Model model, Authentication authentication) {
 
         BigDecimal amount;
 
@@ -175,43 +191,37 @@ public class TransactionController {
             return "transfer2";
         }
 
-        model.addAttribute("amount", amount);
+        ((Transaction) session.getAttribute("transfer")).setAmount(amount);
 
         return "transfer3";
     }
 
     @PostMapping("/transfer3")
-    public String transfer3(@RequestParam(value = "destAccount", required = true) String destAccount,
-            @RequestParam(value = "amount", required = true) String amount,
-            @RequestParam(value = "refNumber", required = true) String refNumber, Model model) {
+    public String transfer3(@RequestParam(value = "refNumber", required = false) String refNumber, HttpSession session,
+            Model model) {
 
-        model.addAttribute("destAccount", destAccount);
-        model.addAttribute("amount", amount);
-
-        if (refNumber == null && refNumber.length() == 0 || !DIGIT_6_REGEX.matcher(refNumber).matches()) {
+        if (refNumber == null || refNumber.length() == 0 || !DIGIT_6_REGEX.matcher(refNumber).matches()) {
             model.addAttribute("errorMessage", "Invalid Reference Number");
             return "transfer3";
         }
 
-        model.addAttribute("refNumber", refNumber);
+        ((Transaction) session.getAttribute("transfer")).setReference(refNumber);
+
         return "transfer4";
     }
 
     @PostMapping("/transfer4")
-    public String transfer4(@RequestParam(value = "destAccount", required = true) String destAccount,
-            @RequestParam(value = "amount", required = true) String amount,
-            @RequestParam(value = "refNumber", required = true) String refNumber,
-            @RequestParam(value = "option", required = false) String option, Model model,
-            Authentication authentication) {
+    public String transfer4(@RequestParam(value = "option", required = false) String option, HttpSession session,
+            Model model, Authentication authentication) {
+
         switch (option) {
         case "1":
+            Transaction transfer = (Transaction) session.getAttribute("transfer");
             Account account = accountRepo.findById(authentication.getName()).get();
-            Account destination = accountRepo.findById(destAccount).get();
-            Transaction transaction = createTransaction(account, TransactionType.TRANSFER, new BigDecimal(amount),
-                    destination);
-
+            Account destination = accountRepo.findById(transfer.getDestinationAccount()).get();
+            Transaction transaction = createTransaction(account, TransactionType.TRANSFER,
+                    transfer.getAmount().negate(), destination, transfer.getReference());
             model.addAttribute("transaction", transaction);
-            model.addAttribute("reference", refNumber);
 
             return "transfer-summary";
         default:
@@ -219,22 +229,37 @@ public class TransactionController {
         }
     }
 
-    @PostMapping("/transfer-summary")
-    public String transfer4(@RequestParam(value = "option", required = false) String option, Model model) {
-        switch (option) {
-        case "1":
-            return "transaction";
-        default:
-            return "redirect:/logout";
+    @PostMapping("/transactions-ondate")
+    public String transactionsOnDate(@RequestParam(value = "onDate", required = false) String onDate, Model model, Authentication authentication) {
+        try {
+            LocalDate localDate = LocalDate.parse(onDate);
+            Page<Transaction> pagedResult = transactionRepo.findTransactionByAccountOnDate(authentication.getName(),
+                    Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                    Date.from(localDate.plusDays(1).atStartOfDay().minusNanos(1).atZone(ZoneId.systemDefault())
+                            .toInstant()),
+                    PageRequest.of(0, 10, Sort.by("transactionDate").descending()));
+            model.addAttribute("transactions", pagedResult.getContent());
+        } catch(DateTimeParseException ex) {
+            model.addAttribute("errorMessage", "Invalid date format");
+            return "transactions-ondate";
         }
+
+        return "transactions-ondate-summary";
+    }
+
+    private void latestTransactions(String accountNumber, Model model) {
+        Page<Transaction> pagedResult = transactionRepo.findTransactionByAccountNumber(accountNumber,
+                PageRequest.of(0, 10, Sort.by("transactionDate").descending()));
+        model.addAttribute("transactions", pagedResult.getContent());
     }
 
     private Transaction createTransaction(Account account, TransactionType type, BigDecimal amount,
-            Account destinationAccount) {
+            Account destinationAccount, String reference) {
         Transaction transaction = new Transaction();
         transaction.setTransactionDate(new Date());
         transaction.setAccountNumber(account.getAccountNumber());
         transaction.setType(type.toString());
+        transaction.setReference(reference);
 
         if (type == TransactionType.TRANSFER && destinationAccount != null) {
             transaction.setDestinationAccount(destinationAccount.getAccountNumber());
@@ -242,7 +267,7 @@ public class TransactionController {
 
         transaction.setAmount(amount);
 
-        BigDecimal balance = account.getBalance().subtract(amount);
+        BigDecimal balance = account.getBalance().add(amount);
         transaction.setBalance(balance);
         transactionRepo.save(transaction);
 
@@ -250,8 +275,8 @@ public class TransactionController {
         accountRepo.save(account);
 
         if (transaction.getDestinationAccount() != null) {
-            Transaction inverseTrans = transaction.inverseTransaction();
-            BigDecimal balance2 = destinationAccount.getBalance().subtract(inverseTrans.getAmount());
+            Transaction inverseTrans = transaction.inverse();
+            BigDecimal balance2 = destinationAccount.getBalance().add(inverseTrans.getAmount());
             inverseTrans.setBalance(balance2);
             transactionRepo.save(inverseTrans);
 

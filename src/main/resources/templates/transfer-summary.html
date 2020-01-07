@@ -9,13 +9,12 @@
     </head>
     <body>
         <h1>ATM Simulation</h1>
-        <form th:action="@{/transfer-summary}" th:object="${transaction}" th:with="transactionDate=${transaction.transactionDate}" method="post" class="container">
+        <form th:action="@{/summary}" th:object="${transaction}" method="post" class="container">
             <div>Fund Transfer Summary</div>
             <div>Destination Account : <span th:text="*{destinationAccount}">112244</span></div>
-            <div>Transfer Amount     : $<span th:text="*{amount}">100</span></div>
-            <div>Reference Number    : <span th:text="${reference}">123456</span></div>
+            <div>Transfer Amount     : $<span th:text="*{amount.abs()}">100</span></div>
+            <div>Reference Number    : <span th:text="*{reference}">123456</span></div>
             <div>Balance             : $<span th:text="*{balance}">50</span></div>
-            <br /><br />
             <ol>
                 <li>Transaction</li>
                 <li>Exit</li>

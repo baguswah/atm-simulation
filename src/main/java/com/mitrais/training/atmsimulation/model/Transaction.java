@@ -37,6 +37,9 @@ public class Transaction {
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 
+    @Column(name = "reference", nullable = true, length = 6)
+    private String     reference;
+
     public Integer getTransactionId() {
         return transactionId;
     }
@@ -93,13 +96,22 @@ public class Transaction {
         this.balance = balance;
     }
 
-    public Transaction inverseTransaction() {
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public Transaction inverse() {
         Transaction transaction = new Transaction();
-        transaction.setTransactionDate(getTransactionDate());
+        transaction.setTransactionDate((Date) getTransactionDate().clone());
         transaction.setAccountNumber(getDestinationAccount());
         transaction.setDestinationAccount(getAccountNumber());
         transaction.setType(getType());
         transaction.setAmount(getAmount().negate());
+        transaction.setReference(getReference());
 
         return transaction;
     }
