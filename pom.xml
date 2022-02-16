@@ -24,7 +24,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
 
-        <postgresql.version>42.2.9</postgresql.version>
+        <postgresql.version>42.3.3</postgresql.version>
         <db.init.skip>true</db.init.skip>
         <db.driver.classname>org.postgresql.Driver</db.driver.classname>
         <db.connection.url>jdbc:postgresql://localhost:5435</db.connection.url>
